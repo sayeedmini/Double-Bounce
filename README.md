@@ -12,7 +12,7 @@ A simple 2D game built using OpenGL, where you control a bouncing ball that must
 
 ## Controls
 
-- **Spacebar:** Jump (Double jump available)
+- **Spacebar:** Jump
 - **Arrow Keys:** Move the ball left or right
 - **Mouse:**
   - **Left Click:** Reset or pause the game or exit the game
