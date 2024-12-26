@@ -57,6 +57,7 @@ def draw_lines():
         glColor3f(0.0, 0.4, 1.0)
         glPointSize(4)
         draw(lx, ly, lx+l, ly)
+        glPointSize(2)
         MidpointCircle(ball_pos[0], ball_pos[1], 10, (1.0, 0.2, 0.0))
 
 def refresh_game():
@@ -65,7 +66,7 @@ def refresh_game():
         by_ball, bl_ball = int(ball_pos[1] - 10), int(ball_pos[0] - 10)
 
         for i, j in special_shape:
-            j[0]-= speed-0.1
+            j[0]-= speed+0.1
             x,y = j
             if (bl_ball < int(x+20)) and ((bl_ball + 20) > int(x)) and (by_ball < int(y+10)) and (by_ball+20 > int(y-10)):
                 if i == 1:
@@ -82,6 +83,9 @@ def refresh_game():
                     print(f"Game Over. Final Score: {score}")
                     freeze = True
                     gameOver = True
+            elif x+20<=0:
+                special_shape.remove([i,j])
+                special_shape.append([random.randint(1,3),[800,random.randint(250,500)]])
 
         for i, j in lines:
             l = int(i)
@@ -119,12 +123,17 @@ def refresh_game():
             if lx+l <=0:
                 lines.remove([i,j])
                 score += 1
-                lines.append([random.randint(30,60),[800, random.uniform(5,200)]])
+                lines.append([random.randint(30,60),[800, random.randint(5,200)]])
                 print(f'Score: {score}')
         if by_ball <= 0:
                 print(f"Game Over. Final Score: {score}")
                 freeze = True
                 gameOver = True
+    elif gameOver:
+        glPointSize(5)
+        glColor3f(0.0, 0.0, 0.5)
+        draw(200,150,600,450)
+        draw(200,450,600,150)
 
 def convert_coordinate(x,y):
     global W_Width, W_Height
@@ -163,10 +172,10 @@ def special_key(key, x, y):
     glutPostRedisplay()
 
 def mouseListener(button, state, x, y):
-    global freeze,gameOver,score,ps,dn,lines,ball_pos,jumping,jump_count,second_jump,ball_return
+    global freeze,gameOver,score,ps,dn,lines,ball_pos,jumping,jump_count,second_jump,ball_return,special_shape
 
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        print(x,y)
+        #print(x,y)
         c_x, c_y = convert_coordinate(x, y)
 
         if 20 < c_x < 60 and 540 < c_y < 580:      #reset
@@ -181,15 +190,18 @@ def mouseListener(button, state, x, y):
             dn = False
             lines = [([random.randint(30, 60), [i * 100, random.randint(5, 200)]]) for i in range(8)]
             ball_pos = [400 + (lines[4][0] / 2), lines[4][1][1] + 15 - 2]
+            special_shape = [([random.randint(1, 3), [random.randint(800, 1600), random.randint(250, 500)]]) for i in
+                             range(5)]
             print( "Starting Over")
 
         elif 680 < c_x < 720 and 540 < c_y < 580:       #pause
-            ps = not ps
-            freeze = not freeze
-            if freeze:
-                print("Frozen")
-            else:
-                print("Unfreeze")
+            if not gameOver:
+                ps = not ps
+                freeze = not freeze
+                if freeze:
+                    print("Frozen")
+                else:
+                    print("Unfreeze")
         elif 740 < c_x < 780 and 540 < c_y < 580:   #exit
             print(f"Goodbye. Final Score: {score}")
             glutLeaveMainLoop()
@@ -212,7 +224,7 @@ def MidpointCircle(cx, cy, r,color):
         circlePoints(x,y,cx,cy,color)
 
 def circlePoints(x,y,cx,cy,color):
-    glPointSize(2)
+    #glPointSize(2)
     glBegin(GL_POINTS)
     glColor3f(*color)
 
@@ -254,7 +266,7 @@ def draw_button():
     draw_Pbutton()
     draw_dnbutton()
 
-def draw_dnbutton():
+def draw_dnbutton():                           #Day night
     global dn
     if dn:
         glClearColor(0.2, 0.2, 0.2, 1.0)
@@ -265,7 +277,27 @@ def draw_dnbutton():
         draw(80, 540, 81, 580)
         draw(119, 580, 120, 540)
         draw(119, 540, 120, 580)
-        MidpointCircle(100, 560, 12, (1.0, 1.0, 0.1))
+        glPointSize(4)
+        MidpointCircle(100, 560, 10, (1.0, 1.0, 0.1))
+        glPointSize(10)
+        MidpointCircle(100, 560, 3, (1.0, 1.0, 0.1))
+
+        #moon
+        glPointSize(2)
+        MidpointCircle(300, 550, 25, (1.0, 1.0, 1.0))
+        MidpointCircle(300, 550, 28, (1.0, 1.0, 1.0))
+        glPointSize(1)
+        MidpointCircle(300, 550, 31, (1.0, 1.0, 1.0))
+        glPointSize(4)
+        MidpointCircle(300,550,23,(1.0,1.0,1.0))
+        glPointSize(8)
+        MidpointCircle(300, 550, 21, (1.0, 1.0, 1.0))
+        glPointSize(20)
+        MidpointCircle(300, 550, 8, (1.0, 1.0, 1.0))
+
+
+
+
     else:
         glClearColor(0.5, 1.0, 1.0, 1.0)
         glColor3f(0.0, 0.0, 0.0)
@@ -275,7 +307,27 @@ def draw_dnbutton():
         draw(80, 540, 81, 580)
         draw(119, 580, 120, 540)
         draw(119, 540, 120, 580)
-        MidpointCircle(100, 560, 12, (1.0, 1.0, 0.0))
+        MidpointCircle(100, 560, 12, (1.0, 1.0, 1.0))
+
+        # sun
+        glPointSize(2)
+        MidpointCircle(300, 550, 25, (1.0, 1.0, 0.5))
+        MidpointCircle(300, 550, 28, (1.0, 1.0, 0.5))
+        draw(335, 550, 350, 550)
+        draw(250, 550, 265, 550)
+        draw(313, 582, 320, 595)
+        draw(287, 582, 280, 595)
+        draw(280, 505, 287, 518)
+        draw(313, 518, 320, 505)
+
+        glPointSize(1)
+        MidpointCircle(300, 550, 31, (1.0, 1.0, 0.5))
+        glPointSize(4)
+        MidpointCircle(300, 550, 23, (1.0, 1.0, 0.0))
+        glPointSize(8)
+        MidpointCircle(300, 550, 21, (1.0, 1.0, 0.0))
+        glPointSize(20)
+        MidpointCircle(300, 550, 8, (1.0, 1.0, 0.0))
 
 def draw_Pbutton():
     global ps
